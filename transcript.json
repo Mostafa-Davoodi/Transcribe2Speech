@@ -1,0 +1,38 @@
+[
+  {
+    "start": 0,
+    "end": 15,
+    "transcript": "Hey everyone! Welcome back to my channel! Today, we're going to solve a pretty common problem in computer science: how to rotate a linked list to the right by k places. ",
+    "code": "class Node:\n    def __init__(self, value=0, next=None):\n        self.value = value\n        self.next = next\n"
+  },
+  {
+    "start": 15,
+    "end": 30,
+    "transcript": "Let's start by defining a Node class for our linked list. This class will have two properties: value and next. Here's what that looks like in code:",
+    "code": "def rotate_right(head: Node, k: int) -> Node:"
+  },
+  {
+    "start": 30,
+    "end": 45,
+    "transcript": "Now, let's create a function called `rotate_right`. This function takes two arguments: the head of the linked list and the number of places to rotate it.",
+    "code": "length = 0\ntail = head\n\nwhile tail.next:\n    length += 1\n    tail = tail.next\n\nlength += 1  # add 1 for the last node"
+  },
+  {
+    "start": 45,
+    "end": 60,
+    "transcript": "To start, let's find the length of the linked list. We'll do this by traversing the list and counting the number of nodes. We'll also keep a reference to the tail of the list so that we can use it later.",
+    "code": "k = k % length\n\nif k == 0:\n    return head"
+  },
+  {
+    "start": 60,
+    "end": 75,
+    "transcript": "Now that we know the length of our list and have a reference to the tail, we can calculate the number of places to rotate the list without going over the length of the list. We'll also handle the case where k is greater than the length of the list by taking the modulus of k and the length of the list.",
+    "code": "new_tail = head\n\nfor i in range(length - k - 1):\n    new_tail = new_tail.next\n\nnew_head = new_tail.next"
+  },
+  {
+    "start": 75,
+    "end": 90,
+    "transcript": "Next, we need to find the new tail of the list. We can do this by traversing the list again, this time stopping k nodes before the end of the list. We'll also keep a reference to the new head of the list so that we can return it later.",
+    "code": "new_tail.next = None\ntail.next = head\nhead = new_head"
+  }
+]

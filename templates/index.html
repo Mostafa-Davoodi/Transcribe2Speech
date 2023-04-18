@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Audio Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</head>
+
+<body>
+    <nav>
+        <div class="nav-wrapper blue darken-2">
+            <a href="#" class="brand-logo center white-text">Audio Generator</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col s12 m8 offset-m2">
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">Upload JSON File</span>
+                        <form id="upload-form" enctype="multipart/form-data">
+                            <div class="file-field input-field">
+                                <div class="btn blue darken-2">
+                                    <span>Choose File</span>
+                                    <input type="file" id="json_file" name="json_file" accept=".json" required>
+                                </div>
+                                <div class="file-path-wrapper">
+                                    <input class="file-path validate" type="text">
+                                </div>
+                            </div>
+                            <div class="center-align">
+                                <button class="btn waves-effect waves-light blue darken-2" type="submit"
+                                    name="action">Generate Audio</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-action center-align">
+                        <div id="loading" style="display:none;">
+                            <p>Generating audio, please wait...</p>
+                        </div>
+                        <div id="result" style="display:none;">
+                            <p>Audio generated successfully!</p>
+                            <a id="download-link" href="/download" download
+                                class="btn waves-effect waves-light blue darken-2">Download Audio</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $("#upload-form").submit(function (event) {
+            event.preventDefault();
+            $("#loading").show();
+            var form = new FormData(this);
+            $.ajax({
+                url: '/upload',
+                type: 'POST',
+                data: form,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    $("#loading").hide();
+                    $("#result").show();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
