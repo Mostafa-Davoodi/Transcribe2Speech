@@ -15,17 +15,21 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
 
-def process_json(data):
+def process_json(data, voice, speed):
     audio_segments = []
 
     for i, segment in enumerate(data):
         transcript = segment["transcript"]
-        tts = gTTS(text=transcript, lang='en')
+        tts = gTTS(text=transcript, lang='en', tld=voice)
         audio_file = f"audio_{i}.mp3"
         tts.save(audio_file)
 
         audio_segment = AudioSegment.from_mp3(audio_file)
-        audio_segments.append(audio_segment)
+        altered_audio_segment = audio_segment._spawn(
+            audio_segment.raw_data, overrides={
+                "frame_rate": int(audio_segment.frame_rate * float(speed))}
+        )
+        audio_segments.append(altered_audio_segment)
         os.remove(audio_file)
 
     final_audio = sum(audio_segments)
@@ -41,13 +45,15 @@ def index():
 @app.route('/upload', methods=['POST'])
 def upload():
     json_file = request.files['json_file']
+    voice = request.form['voice']
+    speed = request.form['speed']
     json_path = os.path.join(app.config['UPLOAD_FOLDER'], 'transcript.json')
     json_file.save(json_path)
 
     with open(json_path, 'r') as file:
         data = json.load(file)
 
-    process_json(data)
+    process_json(data, voice, speed)
     return {'result': 'success'}
 
 

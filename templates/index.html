@@ -1,77 +1,76 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Audio Generator</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JSON to Audio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label,
+        input[type="submit"] {
+            margin-bottom: 10px;
+        }
+
+        .success {
+            display: none;
+            color: green;
+            margin-bottom: 10px;
+        }
+    </style>
+    <script>
+        function submitForm(e) {
+            e.preventDefault();
+            const form = document.getElementById('convertForm');
+            const formData = new FormData(form);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        document.getElementById('successMessage').style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    </script>
 </head>
 
 <body>
-    <nav>
-        <div class="nav-wrapper blue darken-2">
-            <a href="#" class="brand-logo center white-text">Audio Generator</a>
-        </div>
-    </nav>
-
-    <div class="container">
-        <div class="row">
-            <div class="col s12 m8 offset-m2">
-                <div class="card">
-                    <div class="card-content">
-                        <span class="card-title">Upload JSON File</span>
-                        <form id="upload-form" enctype="multipart/form-data">
-                            <div class="file-field input-field">
-                                <div class="btn blue darken-2">
-                                    <span>Choose File</span>
-                                    <input type="file" id="json_file" name="json_file" accept=".json" required>
-                                </div>
-                                <div class="file-path-wrapper">
-                                    <input class="file-path validate" type="text">
-                                </div>
-                            </div>
-                            <div class="center-align">
-                                <button class="btn waves-effect waves-light blue darken-2" type="submit"
-                                    name="action">Generate Audio</button>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="card-action center-align">
-                        <div id="loading" style="display:none;">
-                            <p>Generating audio, please wait...</p>
-                        </div>
-                        <div id="result" style="display:none;">
-                            <p>Audio generated successfully!</p>
-                            <a id="download-link" href="/download" download
-                                class="btn waves-effect waves-light blue darken-2">Download Audio</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        $("#upload-form").submit(function (event) {
-            event.preventDefault();
-            $("#loading").show();
-            var form = new FormData(this);
-            $.ajax({
-                url: '/upload',
-                type: 'POST',
-                data: form,
-                contentType: false,
-                processData: false,
-                success: function (response) {
-                    $("#loading").hide();
-                    $("#result").show();
-                }
-            });
-        });
-    </script>
+    <h1>Convert JSON to Audio</h1>
+    <form id="convertForm" onsubmit="submitForm(event)">
+        <label for="json_file">Choose JSON file:</label>
+        <input type="file" name="json_file" accept=".json" required><br><br>
+        <label for="voice">Choose voice:</label>
+        <select name="voice" required>
+            <option value="com">US (default)</option>
+            <option value="co.uk">UK</option>
+            <option value="com.au">Australia</option>
+            <option value="co.in">India</option>
+            <option value="co.za">South Africa</option>
+        </select><br><br>
+        <label for="speed">Choose speed (1.0 = normal):</label>
+        <input type="number" name="speed" step="0.1" min="0.5" max="2.0" value="1.0" required><br><br>
+        <input type="submit" value="Convert">
+    </form>
+    <div id="successMessage" class="success">Audio successfully generated! Click the link below to download:</div>
+    <a href="/download">Download audio</a>
 </body>
 
 </html>
